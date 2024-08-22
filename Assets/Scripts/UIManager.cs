@@ -9,20 +9,29 @@ public class UIManager : NetworkBehaviour
 {
     [SerializeField]
     private TextMeshProUGUI clientsCounter;
-    private TextMeshProUGUI scoreCounter;
+
+    [SerializeField]
+    private TextMeshProUGUI shotHitsCounter;
+
     private NetworkVariable<int> playersNum = new NetworkVariable<int>(0, NetworkVariableReadPermission.Everyone);
-    public static UIManager instance;
 
     // Start is called before the first frame update
     void Start()
     {
-        instance = this;
+        
     }
 
     // Update is called once per frame
     void Update()
     {
         clientsCounter.text = playersNum.Value.ToString();
+        shotHitsCounter.text = "";
+
+        foreach (GameObject player in GameObject.FindGameObjectsWithTag("Player"))
+        {
+            shotHitsCounter.text += player.name + ": " + player.GetComponent<PlayerController>().shotsHit.Value + "\n";
+        }
+
         if (!IsServer) return;
         playersNum.Value = NetworkManager.Singleton.ConnectedClients.Count;
     }
@@ -33,10 +42,5 @@ public class UIManager : NetworkBehaviour
     public void StartClient()
     {
         NetworkManager.Singleton.StartClient();
-    }
-
-    public void UpdateScore(int score)
-    {
-        scoreCounter.text = score.ToString();
     }
 }

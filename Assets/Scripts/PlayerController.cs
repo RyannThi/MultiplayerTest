@@ -1,81 +1,80 @@
 using System.Collections;
 using System.Collections.Generic;
 using Unity.Netcode;
+using Unity.Netcode.Components;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
 public class PlayerController : NetworkBehaviour
 {
-    Animator anim;
-    InputAction movement, turning, shooting;
-    [SerializeField]
-    GameObject bulletPrefab;
-    int score = 0;
 
+    InputAction movement, turning, shoot;
+    Animator animator;
+    //public int shotsHit;
+
+    public NetworkVariable<int> shotsHit = new NetworkVariable<int>(0, NetworkVariableReadPermission.Everyone);
+
+    [SerializeField]
+    GameObject shotPrefab;
 
     private void Awake()
     {
         InputActionsGame inputsGame = new InputActionsGame();
         movement = inputsGame.Game.Movement;
         turning = inputsGame.Game.Turning;
-        shooting = inputsGame.Game.Shooting;
+        shoot = inputsGame.Game.Shoot;
     }
     private void OnEnable()
     {
         movement.Enable();
         turning.Enable();
-        shooting.Enable();
+        shoot.Enable();
     }
     // Start is called before the first frame update
     void Start()
     {
-        anim = GetComponent<Animator>();
-        transform.position = new Vector3 (Random.Range(-5,5), 0, Random.Range(-5,5));
+        animator = GetComponent<Animator>();
+        transform.position += new Vector3(Random.Range(-15, 15), 0, Random.Range(0, 15));
     }
 
     // Update is called once per frame
     void Update()
     {
-        if (!IsOwner) return;
+        if (!IsOwner) { return; }
         transform.Translate(0, 0, 
             movement.ReadValue<float>()*5*Time.deltaTime);
         transform.Rotate(0,
             turning.ReadValue<float>()*180*Time.deltaTime,0);
 
-        if (movement.ReadValue<float>() != 0 )
+        if (movement.ReadValue<float>() != 0) 
         {
-            anim.SetBool("isWalking", true);
+            animator.SetBool("walking", true);
         }
         else
         {
-            anim.SetBool("isWalking", false);
+            animator.SetBool("walking", false);
         }
 
-        if (shooting.WasPressedThisFrame())
+        if (shoot.IsPressed() && Time.frameCount % 60 == 0)
         {
             ShootBulletServerRpc();
-
         }
 
     }
 
     [ServerRpc]
-    private void ShootBulletServerRpc()
+    void ShootBulletServerRpc()
     {
-        GameObject bullet = Instantiate(bulletPrefab, transform.position + transform.forward, transform.rotation);
-        NetworkObject networkObject = bullet.GetComponent<NetworkObject>();
-        if (networkObject != null)
+        var bullet = Instantiate(shotPrefab);
+        bullet.transform.position = transform.position + (transform.forward * 2);
+        bullet.transform.rotation = transform.rotation;
+        bullet.GetComponent<BulletScript>().owner = this;
+        NetworkObject netObj = bullet.GetComponent<NetworkObject>();
+        if (netObj != null)
         {
-            networkObject.Spawn();
+            netObj.Spawn();
+            netObj.GetComponent<Rigidbody>().AddForce(bullet.transform.forward * 10, ForceMode.Impulse);
         }
-        bullet.GetComponent<BulletController>().player = this;
-    }
-
-    public void AddPoints(int points)
-    {
-        score += points;
-        Debug.Log(score);
-        UIManager.instance.UpdateScore(score);
-        return;
     }
 }
