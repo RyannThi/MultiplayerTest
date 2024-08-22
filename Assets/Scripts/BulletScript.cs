@@ -5,15 +5,14 @@ using UnityEngine;
 
 public class BulletScript : NetworkBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
+    public PlayerController owner;
 
-    // Update is called once per frame
-    void Update()
+    private void OnCollisionEnter(Collision collision)
     {
-        
+        if (collision.gameObject.tag == "Player")
+        {
+            owner.shotsHit.Value++;
+            Destroy(this.gameObject);
+        }
     }
 }

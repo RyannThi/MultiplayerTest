@@ -124,7 +124,7 @@ GameObject:
   - component: {fileID: 3511664659859980992}
   m_Layer: 0
   m_Name: Player
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -230,7 +230,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 464711637
+  GlobalObjectIdHash: 2584993392
   AlwaysReplicateAsRoot: 0
   SynchronizeTransform: 1
   ActiveSceneSynchronization: 0
@@ -250,6 +250,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a133a1b1f04fa9b418f1fe0d0472d4d5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  shotsHit: 0
   shotPrefab: {fileID: 3198428523129885040, guid: 44e4b47698c7c8a4ba74da72d5df6b9d,
     type: 3}
 --- !u!114 &8870793083093952978

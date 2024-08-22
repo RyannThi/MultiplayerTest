@@ -11,6 +11,9 @@ public class PlayerController : NetworkBehaviour
 
     InputAction movement, turning, shoot;
     Animator animator;
+    //public int shotsHit;
+
+    public NetworkVariable<int> shotsHit = new NetworkVariable<int>(0, NetworkVariableReadPermission.Everyone);
 
     [SerializeField]
     GameObject shotPrefab;
@@ -66,6 +69,7 @@ public class PlayerController : NetworkBehaviour
         var bullet = Instantiate(shotPrefab);
         bullet.transform.position = transform.position + (transform.forward * 2);
         bullet.transform.rotation = transform.rotation;
+        bullet.GetComponent<BulletScript>().owner = this;
         NetworkObject netObj = bullet.GetComponent<NetworkObject>();
         if (netObj != null)
         {
