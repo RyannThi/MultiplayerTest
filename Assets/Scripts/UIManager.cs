@@ -9,12 +9,14 @@ public class UIManager : NetworkBehaviour
 {
     [SerializeField]
     private TextMeshProUGUI clientsCounter;
+    private TextMeshProUGUI scoreCounter;
     private NetworkVariable<int> playersNum = new NetworkVariable<int>(0, NetworkVariableReadPermission.Everyone);
+    public static UIManager instance;
 
     // Start is called before the first frame update
     void Start()
     {
-        
+        instance = this;
     }
 
     // Update is called once per frame
@@ -31,5 +33,10 @@ public class UIManager : NetworkBehaviour
     public void StartClient()
     {
         NetworkManager.Singleton.StartClient();
+    }
+
+    public void UpdateScore(int score)
+    {
+        scoreCounter.text = score.ToString();
     }
 }

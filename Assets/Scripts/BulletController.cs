@@ -7,6 +7,8 @@ using UnityEngine;
 public class BulletController : NetworkBehaviour
 {
     float lifeTime = 5.0f;
+    public PlayerController player;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -20,5 +22,14 @@ public class BulletController : NetworkBehaviour
             lifeTime -= Time.deltaTime;
         else
             NetworkObject.Destroy(gameObject);
+    }
+    private void OnCollisionEnter(Collision collision)
+    {
+        if(collision.gameObject.CompareTag("Player"))
+        {
+            Debug.Log("Hit");
+            player.AddPoints(1);
+            NetworkObject.Destroy(gameObject);
+        }
     }
 }

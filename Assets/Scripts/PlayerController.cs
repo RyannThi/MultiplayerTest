@@ -10,6 +10,9 @@ public class PlayerController : NetworkBehaviour
     InputAction movement, turning, shooting;
     [SerializeField]
     GameObject bulletPrefab;
+    int score = 0;
+
+
     private void Awake()
     {
         InputActionsGame inputsGame = new InputActionsGame();
@@ -65,5 +68,14 @@ public class PlayerController : NetworkBehaviour
         {
             networkObject.Spawn();
         }
+        bullet.GetComponent<BulletController>().player = this;
+    }
+
+    public void AddPoints(int points)
+    {
+        score += points;
+        Debug.Log(score);
+        UIManager.instance.UpdateScore(score);
+        return;
     }
 }
